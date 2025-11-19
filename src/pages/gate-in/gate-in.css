@@ -1,0 +1,30 @@
+.header {
+    height: 14vh;
+}
+
+.content {
+    height: 76vh;
+}
+
+.footer {
+  height: 10vh;
+}
+
+/* .vehicle-label {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.vehicle-input {
+  font-size: 24px;
+  font-weight: 600;
+  color: #555;
+  padding: 12px 14px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}
+
+.vehicle-input::placeholder {
+  color: #999;
+  font-weight: 500;
+} */
