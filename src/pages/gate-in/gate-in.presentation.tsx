@@ -1,5 +1,6 @@
 import './gate-in.css'
 import type { VehicleType, PosConfig, Member } from '../../types';
+import { ParkingTicket } from '../index';
 
 type Props = {
   date: string;
@@ -14,6 +15,7 @@ type Props = {
   downloadingMember: boolean
   checkingClockIn: boolean
   disablePrintButton: boolean
+  savingTicket: boolean
   handleSubmitVehicleNo: (vehicleNo: string) => void;
   setSelectedVehicleType: (vehicleType: string) => void;
   setVehicleNumber: (vehicleType: string) => void;
@@ -21,6 +23,7 @@ type Props = {
 };
 
 export default function GateInPresentation({
+  savingTicket,
   date,
   time,
   member,
@@ -50,8 +53,9 @@ export default function GateInPresentation({
 
       <div className='content d-flex m-0 p-0'>
         <div className='content-left-container'>
-          <div className='input-camera m-2 p-2'>
-            <h5 className='text-center'>Kamera Input</h5>
+          <div className='input-camera m-2 p-2 justify-content-center align-items-center'>
+            <div className='box d-flex align-items-center justify-content-center'>Entrance cam 1</div>
+            <div className='box d-flex align-items-center justify-content-center'>Entrance cam 2</div>
           </div>
           <div className='d-flex align-items-center gap-4 mx-2 p-2 input-vehicle-no'>
             <div className='col-2'>
@@ -95,7 +99,7 @@ export default function GateInPresentation({
             </div>
           </div>
           <div className='flex-column d-flex align-items-center justify-content-center button-cont'>
-            {checkingClockIn
+            {checkingClockIn || savingTicket
               ? <p>Memuat</p>
               : <button
                 className='btn btn-success btn-print'
@@ -115,7 +119,7 @@ export default function GateInPresentation({
       <div className="d-flex footer m-0 p-0 justify-content-between">
         <div className="d-flex flex-column justify-content-center m-0 px-2">
           <p className="m-0">Parkee System</p>
-          <p className="m-0">v2.0.1</p>
+          <p className="m-0">{posConfig.posCode} {posConfig.posType} - v2.0.1</p>
         </div>
 
         <div className="d-flex align-items-center justify-content-end m-0 px-2 gap-2">
@@ -133,7 +137,13 @@ export default function GateInPresentation({
           </button>
         </div>
       </div>
-
+      {/* <div id="ticket-print-area" style={{visibility: 'hidden'}}>
+        <ParkingTicket
+          clockIn="21 Nov 2025 09:15:00"
+          vehicleType="Motor"
+          vehicleNo="B 1234 CD"
+        />
+      </div> */}
     </div>
   );
 }

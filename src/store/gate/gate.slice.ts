@@ -6,6 +6,7 @@ interface GateState {
   posConfig: PosConfig;
   vehicleType: VehicleType[];
 
+  savingTicket: boolean;
   checkingClockIn: boolean;
   downloadingMember: boolean;
   downloadingVehicleType: boolean;
@@ -17,6 +18,7 @@ const initialState: GateState = {
   posConfig: {} as PosConfig,
   vehicleType: [],
 
+  savingTicket: false,
   checkingClockIn: false,
   downloadingMember: false,
   downloadingPosConfig: false,
@@ -24,7 +26,7 @@ const initialState: GateState = {
 };
 
 export const gateSlice = createSlice({
-  name: "gate",
+  name: 'gate',
   initialState,
   reducers: {
     setVehicleType: (state, action: PayloadAction<VehicleType[]>) => {
@@ -40,6 +42,9 @@ export const gateSlice = createSlice({
       state.member = {} as Member;
     },
 
+    setSavingTicket: (state, action: PayloadAction<boolean>) => {
+      state.savingTicket = action.payload;
+    },
     setCheckingClockIn: (state, action: PayloadAction<boolean>) => {
       state.checkingClockIn = action.payload;
     },
@@ -57,6 +62,6 @@ export const gateSlice = createSlice({
 
 export const { 
   setVehicleType, setDownloadingVehicleType, setPosConfig, setDownloadingPosConfig, 
-  setDownloadingMember, setMember, clearMember, setCheckingClockIn
+  setDownloadingMember, setMember, clearMember, setCheckingClockIn, setSavingTicket
  } = gateSlice.actions;
 export default gateSlice.reducer;

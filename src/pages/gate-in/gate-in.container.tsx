@@ -5,7 +5,7 @@ import type { RootState } from '../../store/store';
 import {
   setDownloadingVehicleType, setDownloadingPosConfig,
   setVehicleType, setPosConfig, setDownloadingMember,
-  setMember, clearMember, setCheckingClockIn
+  setMember, clearMember, setCheckingClockIn, setSavingTicket
 } from '../../store/gate/gate.slice';
 import { isEmpty } from 'lodash';
 import { post, doFetch } from '../../helper/api';
@@ -27,7 +27,8 @@ export default function GateInContainer() {
     downloadingMember,
     downloadingPosConfig,
     downloadingVehicleType,
-    checkingClockIn
+    checkingClockIn,
+    savingTicket
   } = useSelector((state: RootState) => state.gate);
   const POS_CODE = '001';
 
@@ -37,7 +38,7 @@ export default function GateInContainer() {
     }
   }
   const getMember = async (vehicleNo: string) => {
-    const v = vehicleNo.toLocaleUpperCase();
+    const v = vehicleNo.toLocaleUpperCase().replace(/\s/g, '');
     try {
       dispatch(setDownloadingMember(true));
       const res = await doFetch(`/member/vehicle/${v}`);
@@ -57,8 +58,8 @@ export default function GateInContainer() {
     }
   }
 
-  const getClockIn = async (vehicleNo: string) => {
-    const v = vehicleNo.toLocaleUpperCase();
+  const getClockIn = async (vehicleNo: string) => { 
+    const v = vehicleNo.toLocaleUpperCase().replace(/\s/g, '');
     try {
       dispatch(setCheckingClockIn(true));
       const res = await doFetch(`/clock-in/${v}`);
@@ -108,15 +109,22 @@ export default function GateInContainer() {
       vehicleType: selectedVehicleType,
       vehicleNo: selectedVehicleNumber
     }
-    await post('/clock-in/insert', body);
+    try {
+      dispatch(setSavingTicket(true))
+      await post('/clock-in/insert', body);
+      // do printing here
+    } catch (err) {
+      console.error("Failed to fetch insert parking", err);
+    } finally {
+      dispatch(setSavingTicket(false))
+    }
   }
 
   const fetchPosConfig = async () => {
     try {
       dispatch(setDownloadingPosConfig(true));
-      const res = await fetch(`http://localhost:9001/api/pos/${POS_CODE}`);
-      const json = await res.json();
-      dispatch(setPosConfig(json));
+      const res = await doFetch(`/pos/${POS_CODE}`);
+      dispatch(setPosConfig(res));
     } catch (error) {
       console.error("Failed to fetch pos config", error);
     } finally {
@@ -136,12 +144,13 @@ export default function GateInContainer() {
 
   return (
     <GateInPresentation
-      printErrorMessage={printErrorMessage}
+      savingTicket={savingTicket}
       date={date}
       time={time}
       member={member}
       posConfig={posConfig}
       vehicleType={vehicleType}
+      printErrorMessage={printErrorMessage}
       selectedVehicleType={selectedVehicleType}
       setSelectedVehicleType={setSelectedVehicleType}
       downloadingPosConfig={downloadingPosConfig}
