@@ -1,26 +1,62 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-
+import type { PosConfig, VehicleType, Member } from "../../types";
 interface GateState {
-  counter: number;
+  member: Member
+  posConfig: PosConfig;
+  vehicleType: VehicleType[];
+
+  checkingClockIn: boolean;
+  downloadingMember: boolean;
+  downloadingVehicleType: boolean;
+  downloadingPosConfig: boolean;
 }
 
 const initialState: GateState = {
-  counter: 0,
+  member: {} as Member,
+  posConfig: {} as PosConfig,
+  vehicleType: [],
+
+  checkingClockIn: false,
+  downloadingMember: false,
+  downloadingPosConfig: false,
+  downloadingVehicleType: false
 };
 
 export const gateSlice = createSlice({
   name: "gate",
   initialState,
   reducers: {
-    increment: (state) => {
-      state.counter += 1;
+    setVehicleType: (state, action: PayloadAction<VehicleType[]>) => {
+      state.vehicleType = action.payload;
     },
-    setCounter: (state, action: PayloadAction<number>) => {
-      state.counter = action.payload;
+    setPosConfig: (state, action: PayloadAction<PosConfig>) => {
+      state.posConfig = action.payload;
     },
-  },
+    setMember: (state, action: PayloadAction<Member>) => {
+      state.member = action.payload;
+    },
+    clearMember: (state) => {
+      state.member = {} as Member;
+    },
+
+    setCheckingClockIn: (state, action: PayloadAction<boolean>) => {
+      state.checkingClockIn = action.payload;
+    },
+    setDownloadingMember: (state, action: PayloadAction<boolean>) => {
+      state.downloadingMember = action.payload;
+    },
+    setDownloadingVehicleType: (state, action: PayloadAction<boolean>) => {
+      state.downloadingVehicleType = action.payload;
+    },
+    setDownloadingPosConfig: (state, action: PayloadAction<boolean>) => {
+      state.downloadingPosConfig = action.payload;
+    },
+  }
 });
 
-export const { increment, setCounter } = gateSlice.actions;
+export const { 
+  setVehicleType, setDownloadingVehicleType, setPosConfig, setDownloadingPosConfig, 
+  setDownloadingMember, setMember, clearMember, setCheckingClockIn
+ } = gateSlice.actions;
 export default gateSlice.reducer;

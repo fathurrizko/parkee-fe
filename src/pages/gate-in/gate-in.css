@@ -1,30 +1,56 @@
 .header {
-    height: 14vh;
+  height: 14vh;
+  background-color: #024554;
+  color: #ffffff;
 }
 
 .content {
-    height: 76vh;
+  height: 76vh;
 }
 
 .footer {
   height: 10vh;
+  background-color: #C2C0A6;
 }
 
-/* .vehicle-label {
-  font-weight: 600;
-  font-size: 20px;
+.member-container {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  row-gap: 4px;
 }
 
-.vehicle-input {
-  font-size: 24px;
-  font-weight: 600;
-  color: #555;
-  padding: 12px 14px;
-  border: 2px solid #ccc;
+.content-left-container {
+  width: 64%;
+  background-color: '#818274'
+}
+
+.content-right-container {
+  width: 36%;
+  border: 1px solid gray;
+  border-radius: 8px;
+  margin: 8px;
+  .member {
+    height: 80%;
+  }
+  .button-cont {
+    height: 20%;
+  }
+}
+
+.input-camera {
+  height: 80%;
+  background-color: #B4BEC9;
   border-radius: 8px;
 }
+.input-vehicle-no {
+  height: 16%;
+  background-color: #6D86A6;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-weight: 400;
+  font-size: 16px;
+}
 
-.vehicle-input::placeholder {
-  color: #999;
-  font-weight: 500;
-} */
+.btn-print {
+  width: 280px;
+}

@@ -1,35 +1,72 @@
-import { useState } from 'react';
 import './gate-in.css'
+import type { VehicleType, PosConfig, Member } from '../../types';
 
-export default function GateInPresentation() {
-  const [parkingType, setParkingType] = useState('');
+type Props = {
+  date: string;
+  time: string;
+  selectedVehicleType: string;
+  printErrorMessage: string;
+  member: Member;
+  posConfig: PosConfig;
+  vehicleType: VehicleType[];
+  downloadingPosConfig: boolean
+  downloadingVehicleType: boolean
+  downloadingMember: boolean
+  checkingClockIn: boolean
+  disablePrintButton: boolean
+  handleSubmitVehicleNo: (vehicleNo: string) => void;
+  setSelectedVehicleType: (vehicleType: string) => void;
+  setVehicleNumber: (vehicleType: string) => void;
+  onPrintPressed: () => void;
+};
+
+export default function GateInPresentation({
+  date,
+  time,
+  member,
+  posConfig,
+  vehicleType,
+  selectedVehicleType,
+  printErrorMessage,
+  downloadingPosConfig,
+  downloadingVehicleType,
+  downloadingMember,
+  checkingClockIn,
+  disablePrintButton,
+  setSelectedVehicleType,
+  handleSubmitVehicleNo,
+  onPrintPressed,
+  setVehicleNumber
+}: Props) {
   return (
     <div className='container-fluid min-vh-100 min-vw-100 p-0 m-0'>
-      <div className='header bg-primary w-100 d-flex flex-column align-items-center justify-content-center'>
-        <h1>This is datetime</h1>
-
-        <h5>Main Entrance East Lobby</h5>
-
+      <div className='header w-100 d-flex flex-column align-items-center justify-content-center'>
+        {downloadingPosConfig
+          ? <h5>Memuat Lokasi</h5>
+          : <h5>{date} - {posConfig.posLocation}</h5>
+        }
+        <h1>{time}</h1>
       </div>
 
-      <div className='content d-flex m-0 p-0 justify-content-between'>
-        <div style={{ width: '64%', backgroundColor: 'green' }}>
-          <div style={{ height: '80%' }}>
-            <h1>top left</h1>
+      <div className='content d-flex m-0 p-0'>
+        <div className='content-left-container'>
+          <div className='input-camera m-2 p-2'>
+            <h5 className='text-center'>Kamera Input</h5>
           </div>
-          <div className='d-flex align-items-center gap-4 p-2' style={{ height: '20%', backgroundColor: 'brown' }}>
+          <div className='d-flex align-items-center gap-4 mx-2 p-2 input-vehicle-no'>
             <div className='col-2'>
               <div className="form-group">
                 <label className="mb-1">Jenis Kendaraan</label>
                 <select
                   className="form-select"
-                  value={parkingType}
-                  onChange={(e) => setParkingType(e.target.value)}
+                  value={selectedVehicleType}
+                  disabled={downloadingVehicleType}
+                  onChange={(e) => setSelectedVehicleType(e.target.value)}
                 >
-                  <option value="mobil">Mobil</option>
-                  <option value="motor">Motor</option>
-                  <option value="box">Box/Pick Up</option>
-                  <option value="van">Van 5meter</option>
+                  {downloadingVehicleType
+                    ? <option key={1}>Memuat..</option>
+                    : vehicleType?.map(e => <option key={e.vehicleType} value={e.vehicleType}>{e.description}</option>)
+                  }
                 </select>
               </div>
             </div>
@@ -41,32 +78,47 @@ export default function GateInPresentation() {
                   className="form-control"
                   style={{ width: '80%' }}
                   placeholder="B1123VMC"
+                  onBlur={(e) => handleSubmitVehicleNo(e.target.value)}
+                  onChange={(e) => setVehicleNumber(e.target.value)}
                 />
               </div>
             </div>
           </div>
         </div>
-        <div style={{ width: '36%', backgroundColor: 'gray' }}>
-          <div style={{ height: '80%' }}>
-
-            <p>Member</p>
-            <p>Nama </p>
-            <p>Kedaluwarsa</p>
-            <p>Jenis Parkir</p>
+        <div className='content-right-container p-2'>
+          <div className='member'>
+            <p className='text-center'>{downloadingMember ? 'Memuat member..' : 'Member'}</p>
+            <div className='member-container'>
+              <p>Nama</p><p>: {member.memberName ?? ''} </p>
+              <p>Kedaluwarsa</p><p>: {member.expiredDate}</p>
+              <p>Jenis Parkir</p><p>: {member.vehicleDesc}</p>
+            </div>
           </div>
-          <div className='d-flex align-items-center justify-content-center' style={{ height: '20%' }}>
-            <button>Cetak Tiket</button>
+          <div className='flex-column d-flex align-items-center justify-content-center button-cont'>
+            {checkingClockIn
+              ? <p>Memuat</p>
+              : <button
+                className='btn btn-success btn-print'
+                disabled={checkingClockIn || disablePrintButton}
+                onClick={onPrintPressed}
+              >Cetak Tiket</button>
+            }
+            {printErrorMessage && (
+              <div>
+                <p>{printErrorMessage}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="d-flex bg-warning footer m-0 p-0 justify-content-between">
-        <div className="d-flex flex-column justify-content-center m-0 px-2 bg-secondary">
+      <div className="d-flex footer m-0 p-0 justify-content-between">
+        <div className="d-flex flex-column justify-content-center m-0 px-2">
           <p className="m-0">Parkee System</p>
           <p className="m-0">v2.0.1</p>
         </div>
 
-        <div className="bg-danger d-flex align-items-center justify-content-end m-0 px-2 gap-2">
+        <div className="d-flex align-items-center justify-content-end m-0 px-2 gap-2">
           <button>
             Conventional<br />(F1)
           </button>
@@ -83,6 +135,5 @@ export default function GateInPresentation() {
       </div>
 
     </div>
-
   );
 }
