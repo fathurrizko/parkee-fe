@@ -1,28 +1,47 @@
 import './gate-out.css'
-import type { Member, PaymentMethod, PosConfig } from '../../types';
+import type { Member, PaymentMethod, PosConfig, Tariff } from '../../types';
 
 type Props = {
   paymentMethod: PaymentMethod[];
-  posConfig: PosConfig;
+  tariff: Tariff;
   member: Member;
+  posConfig: PosConfig;
   date: string;
   time: string;
   selectedVehicleType: string;
   printErrorMessage: string;
+  selectedVehicleNumber: string
+  selectedVoucherCode: string
+  selectedPaymentMethod: string
+  selectedVoucherAmount: number
   setVehicleNumber: (vehicleType: string) => void;
   handleSubmitVehicleNo: (vehicleNo: string) => void;
+  onPrintPressed: () => void;
+  downloadingMember: boolean;
+  submitingClockOut: boolean;
+
+  handleInput: (value: string | number, type: string) => void
 }
 
 export default function GateOutPresentation({
   date,
   time,
+  tariff,
   member,
   posConfig,
   paymentMethod,
   printErrorMessage,
   selectedVehicleType,
+  selectedVehicleNumber,
   setVehicleNumber,
   handleSubmitVehicleNo,
+  onPrintPressed,
+  handleInput,
+  submitingClockOut,
+  downloadingMember,
+  selectedVoucherCode,
+  selectedVoucherAmount,
+  selectedPaymentMethod
 }: Props) {
   return (
     <div className='container-fluid min-vh-100 min-vw-100 p-0 m-0'>
@@ -46,8 +65,9 @@ export default function GateOutPresentation({
                   type="text"
                   className="form-control"
                   placeholder="B1123VMC"
-                onBlur={(e) => handleSubmitVehicleNo(e.target.value)}
-                onChange={(e) => setVehicleNumber(e.target.value)}
+                  value={selectedVehicleNumber}
+                  onBlur={(e) => handleSubmitVehicleNo(e.target.value)}
+                  onChange={(e) => setVehicleNumber(e.target.value)}
                 />
               </div>
             </div>
@@ -66,8 +86,9 @@ export default function GateOutPresentation({
                 {/* belum ada loading */}
                 <select
                   className="form-select"
-                  value={''}
-                // onChange={(e) => setSelectedVehicleType(e.target.value)}
+                  value={selectedPaymentMethod}
+                  // onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                  onChange={(e) => handleInput(e.target.value, 'paycode')}
                 >
                   {paymentMethod.map(e => (
                     <option key={e.value} value={e.value}>{e.value}</option>
@@ -82,36 +103,65 @@ export default function GateOutPresentation({
                 <input
                   type="text"
                   className="form-control"
-                  // style={{ width: '80%' }}
+                  value={selectedVoucherCode}
                   placeholder="PRKE|V01234"
-                // onBlur={(e) => handleSubmitVehicleNo(e.target.value)}
-                // onChange={(e) => setVehicleNumber(e.target.value)}
+                  // onChange={(e) => setSelectedVoucherCode(e.target.value)}
+                  onChange={(e) => handleInput(e.target.value, 'vcode')}
                 />
               </div>
               <div className='form-group flex-column col-lg-5'>
                 <label>Nominal Voucher</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
-                  inputMode='numeric'
-                  // style={{ width: '80%' }}
+                  value={selectedVoucherAmount}
                   placeholder="10000"
-                // onBlur={(e) => handleSubmitVehicleNo(e.target.value)}
-                // onChange={(e) => setVehicleNumber(e.target.value)}
+                  // min={0}
+                  // max={tariff?.billDetail?.billAmount || 0}
+                  onChange={(e) => handleInput(e.target.value, 'vamt')}
                 />
               </div>
             </div>
           </div>
         </div>
-        <div className='middle-right'>
-          right
-            <p>Nama</p><p>: {member.memberName ?? ''} </p>
-
-          {printErrorMessage && (
-              <div>
-                <p>{printErrorMessage}</p>
-              </div>
+        <div className='middle-right p-2'>
+          <div style={{ height: '85%' }}>
+            <p className='text-center'>{downloadingMember ? 'Memuat member..' : 'Member'}</p>
+            <div className='detail-container'>
+              <p>Nama</p><p>: {member?.memberName} </p>
+              <p>Kedaluwarsa</p><p>: {member?.expiredDate}</p>
+              <p>Jenis Parkir</p><p>: {member?.vehicleDesc}</p>
+            </div>
+            <p className='text-center'>{downloadingMember ? 'Memuat..' : 'Waktu Masuk dan Keluar'}</p>
+            <div className='member-container'>
+              <p>Jam Masuk</p><p>: {tariff?.clockIn} </p>
+              <p>Jam Keluar</p><p>: {tariff?.clockOut} </p>
+              <p>Durasi</p> {tariff.billDetail ? <p>: {tariff?.billDetail?.hours || 0} Jam, {tariff?.billDetail?.minutes || 0} menit, {tariff?.billDetail?.seconds || 0} detik</p> : <p>:</p>}
+              <p>Tarif per jam</p><p>: {tariff?.rates}</p>
+              <p>Biaya Parkir</p><p>: {tariff?.billDetail?.billAmount}</p>
+              <p>Voucher</p><p>: {tariff?.billDetail ? selectedVoucherAmount : null}</p>
+            </div>
+            {tariff?.billDetail && (
+              <p className='text-center mt-4 gran-total'>
+                Total Bayar {tariff?.billDetail?.billAmount - selectedVoucherAmount}
+              </p>
             )}
+
+          </div>
+
+          <div className='flex-column d-flex align-items-center justify-content-center'>
+            <button
+              className='btn btn-success w-28'
+              onClick={onPrintPressed}
+              disabled={!!printErrorMessage || submitingClockOut}
+            >
+              {submitingClockOut ? 'Mengirim..' : 'Cetak'}
+            </button>
+
+            {printErrorMessage && (
+              <div><p>{printErrorMessage}</p></div>
+            )}
+          </div>
         </div>
       </div>
       <div className="d-flex lower m-0 p-0 justify-content-between">

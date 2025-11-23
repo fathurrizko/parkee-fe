@@ -104,14 +104,17 @@ export default function GateInContainer() {
       return setPrintErrorMessage('Silakan isi Nomor Polisi Kendaraan');
     }
 
+    const vehicleNo = selectedVehicleNumber.toLocaleUpperCase().replace(/\s/g, '');
     const body = {
       posCode: POS_CODE,
       vehicleType: selectedVehicleType,
-      vehicleNo: selectedVehicleNumber
+      vehicleNo
     }
     try {
       dispatch(setSavingTicket(true))
-      await post('/clock-in/insert', body);
+      const response = await post('/clock-in/insert', body);
+      setVehicleNumber('');
+      console.log('selectedVehicleNumber: ', selectedVehicleNumber)
       // do printing here
     } catch (err) {
       console.error("Failed to fetch insert parking", err);
@@ -147,6 +150,7 @@ export default function GateInContainer() {
       savingTicket={savingTicket}
       date={date}
       time={time}
+      selectedVehicleNumber={selectedVehicleNumber}
       member={member}
       posConfig={posConfig}
       vehicleType={vehicleType}

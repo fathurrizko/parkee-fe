@@ -6,6 +6,7 @@ type Props = {
   date: string;
   time: string;
   selectedVehicleType: string;
+  selectedVehicleNumber: string;
   printErrorMessage: string;
   member: Member;
   posConfig: PosConfig;
@@ -36,6 +37,7 @@ export default function GateInPresentation({
   downloadingMember,
   checkingClockIn,
   disablePrintButton,
+  selectedVehicleNumber,
   setSelectedVehicleType,
   handleSubmitVehicleNo,
   onPrintPressed,
@@ -81,6 +83,7 @@ export default function GateInPresentation({
                   type="text"
                   className="form-control"
                   style={{ width: '80%' }}
+                  value={selectedVehicleNumber}
                   placeholder="B1123VMC"
                   onBlur={(e) => handleSubmitVehicleNo(e.target.value)}
                   onChange={(e) => setVehicleNumber(e.target.value)}
@@ -98,7 +101,7 @@ export default function GateInPresentation({
               <p>Jenis Parkir</p><p>: {member.vehicleDesc}</p>
             </div>
           </div>
-          <div className='flex-column d-flex align-items-center justify-content-center button-cont'>
+          <div className='flex-column d-flex align-items-center button-cont'>
             {checkingClockIn || savingTicket
               ? <p>Memuat</p>
               : <button

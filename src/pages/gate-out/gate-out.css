@@ -39,6 +39,7 @@
   display: grid;
   grid-template-columns: 50% 1fr;
   gap: 8px;
+
   .box {
     border-radius: 8px;
     background-color: #FFFFFF;
@@ -52,4 +53,20 @@
   color: #FFFFFF;
   font-weight: 400;
   font-size: 16px;
+}
+
+.detail-container {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  row-gap: 4px;
+}
+
+.w-28 {
+  width: 280px;
+}
+
+.gran-total {
+  color: red;
+  font-weight: 600;
+  font-size: 18px;
 }
